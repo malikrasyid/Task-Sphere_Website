@@ -114,7 +114,7 @@ import { computed, onMounted, ref } from 'vue'
 import TaskCard from './TaskCard.vue'
 import TeamMemberCard from './TeamMemberCard.vue'
 import { projectCardState, modalState, toastState } from '../stores/componentState'
-import { fetchTasksFromProject } from '../services/api'
+import { fetchTasksFromProject, deleteProject } from '../services/api'
 
 const props = defineProps({
   project: {
