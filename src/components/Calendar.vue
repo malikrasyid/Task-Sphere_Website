@@ -23,7 +23,7 @@
               {{ selectedTask.status }}
             </span>
           </p>
-          <p><span class="font-medium">Description:</span> {{ selectedTask.description || 'No description' }}</p>
+          <p><span class="font-medium">Deliverable:</span> {{ selectedTask.deliverable || 'No deliverable' }}</p>
           <p><span class="font-medium">Start:</span> {{ formatDate(selectedTask.start) }}</p>
           <p><span class="font-medium">End:</span> {{ formatDate(selectedTask.end) }}</p>
         </div>
@@ -62,7 +62,7 @@ export default {
       projectName: '',
       status: '',
       backgroundColor: '',
-      description: '',
+      deliverable: '',
       start: null,
       end: null
     });
@@ -167,7 +167,7 @@ export default {
             backgroundColor: color,
             borderColor: color,
             textColor: '#FFFFFF',
-            description: task.deliverable || task.description,
+            deliverable: task.deliverable,
             extendedProps: {
               projectName: task.projectName,
               status: task.status,
@@ -261,7 +261,7 @@ export default {
         backgroundColor: event.backgroundColor,
         status: event.extendedProps.status,
         projectName: event.extendedProps.projectName,
-        description: event.extendedProps.description || ''
+        deliverable: event.extendedProps.deliverable || ''
       };
       showModal.value = true;
     };
