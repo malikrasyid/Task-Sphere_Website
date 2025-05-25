@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <div id="calendar" ref="calendarRef"></div>
@@ -70,7 +69,6 @@ export default {
 
     const loadCalendarData = async () => {
       try {
-        
         // Fetch all projects
         const projectsData = await fetchProjects();
         console.log('Loaded projects data:', projectsData);
@@ -82,29 +80,39 @@ export default {
           return [];
         }
         
+        // Create a map of project names for quick lookup
+        const projectMap = new Map();
+        projects.forEach(project => {
+          projectMap.set(project.name, project);
+        });
+        
         // Fetch all tasks from all projects
         const allTasks = [];
         for (const project of projects) {
-          console.log(`Loading tasks for project ${project.projectId}:`, project.name);
+          console.log(`Loading tasks for project ${project.name}:`, project);
           const tasks = await fetchTasksFromProject(project.projectId);
-          console.log(`Tasks for project ${project.projectId}:`, tasks);
+          console.log(`Tasks for project ${project.name}:`, tasks);
           
           // Handle both array and object responses
           let tasksArray;
           if (Array.isArray(tasks)) {
             tasksArray = tasks;
           } else if (tasks && typeof tasks === 'object') {
-            // If tasks is an object with a tasks array property
             tasksArray = tasks.tasks || Object.values(tasks);
           } else {
             tasksArray = [];
           }
           
           if (tasksArray && tasksArray.length) {
-            console.log(`Adding ${tasksArray.length} tasks to allTasks`);
-            allTasks.push(...tasksArray);
+            // Add project name to each task
+            const tasksWithProject = tasksArray.map(task => ({
+              ...task,
+              projectName: project.name
+            }));
+            console.log(`Adding ${tasksWithProject.length} tasks to allTasks for project ${project.name}`);
+            allTasks.push(...tasksWithProject);
           } else {
-            console.log(`No tasks found for project ${project.projectId}`);
+            console.log(`No tasks found for project ${project.name}`);
           }
         }
         
@@ -124,7 +132,7 @@ export default {
 
           const isValid = task && startDate && endDate;
           if (!isValid && task) {
-            console.log(`Task filtered out - ID: ${task.taskId}, Name: ${task.name}, 
+            console.log(`Task filtered out - Name: ${task.name}, 
               startDate: ${startDate}, endDate: ${endDate}`);
           }
           return isValid;
@@ -135,8 +143,6 @@ export default {
         // Map tasks to calendar events
         const calendarEvents = validTasks.map(task => {
           const color = getTaskColor(task.status);
-          const project = projects.find(p => p.projectId === task.projectId);
-          const projectName = project ? project.name : 'Unknown Project';
           
           // Convert Firestore Timestamps to Date objects if needed
           const startDate = task.startDate?.toDate ? task.startDate.toDate() : new Date(task.startDate);
@@ -147,8 +153,14 @@ export default {
             return null;
           }
 
+          console.log('Creating calendar event:', {
+            taskId: task.taskId || task.id,
+            projectName: task.projectName,
+            taskName: task.name
+          });
+
           return {
-            id: task.taskId,
+            id: task.taskId || task.id,
             title: task.name,
             start: startDate.toISOString(),
             end: endDate.toISOString(),
@@ -157,8 +169,7 @@ export default {
             textColor: '#FFFFFF',
             description: task.deliverable || task.description,
             extendedProps: {
-              projectId: task.projectId,
-              projectName: projectName,
+              projectName: task.projectName,
               status: task.status,
               comments: task.comments || []
             }
