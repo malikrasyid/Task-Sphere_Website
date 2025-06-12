@@ -137,6 +137,12 @@ export async function markAllNotificationsAsRead() {
   return apiRequest('/api/notifications', 'PUT');
 }
 
-export async function sendNotification(userId, title, body, link = null) {
-  return apiRequest('/api/notifications', 'POST', { userId, title, body, link });
+export async function sendNotification(projectId, taskId, title, body, type = 'info') {
+  return apiRequest('/api/notifications', 'POST', { 
+    projectId, 
+    taskId, 
+    title, 
+    body, 
+    type 
+  });
 } 

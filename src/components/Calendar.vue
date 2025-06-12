@@ -1,5 +1,57 @@
 <template>
   <div>
+    <div class="flex justify-end mb-4">
+      <!-- Add Project Filter -->
+      <div class="mb-4 flex items-center space-x-4">
+        <div class="relative">
+          <button 
+            @click="toggleProjectFilter" 
+            class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            <span>Filter Projects</span>
+            <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+
+          <!-- Project Filter Dropdown -->
+          <div 
+            v-if="showProjectFilter" 
+            class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-50"
+          >
+            <div class="px-4 py-2 border-b">
+              <div class="flex justify-between items-center">
+                <h3 class="text-sm font-medium text-gray-900">Select Projects</h3>
+                <button 
+                  @click="selectAllProjects" 
+                  class="text-xs text-indigo-600 hover:text-indigo-800"
+                >
+                  {{ selectedProjects.length === projects.length ? 'Deselect All' : 'Select All' }}
+                </button>
+              </div>
+            </div>
+            <div class="max-h-60 overflow-y-auto">
+              <div 
+                v-for="project in projects" 
+                :key="project.projectId"
+                class="px-4 py-2 hover:bg-gray-50"
+              >
+                <label class="flex items-center space-x-3 cursor-pointer">
+                  <input 
+                    type="checkbox"
+                    :value="project.projectId"
+                    v-model="selectedProjects"
+                    @change="handleProjectFilterChange"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  >
+                  <span class="text-sm text-gray-700">{{ project.name }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="calendar" ref="calendarRef"></div>
     
     <!-- Task Details Modal -->
@@ -23,7 +75,7 @@
               {{ selectedTask.status }}
             </span>
           </p>
-          <p><span class="font-medium">Deliverable:</span> {{ selectedTask.deliverable || 'No deliverable' }}</p>
+          <p><span class="font-medium">Description:</span> {{ selectedTask.description || 'No description' }}</p>
           <p><span class="font-medium">Start:</span> {{ formatDate(selectedTask.start) }}</p>
           <p><span class="font-medium">End:</span> {{ formatDate(selectedTask.end) }}</p>
         </div>
@@ -57,38 +109,56 @@ export default {
     const calendar = ref(null);
     const showModal = ref(false);
     const events = ref([]);
+    const allEvents = ref([]); // Store all events for filtering
+    const projects = ref([]); // Store projects list
+    const showProjectFilter = ref(false);
+    const selectedProjects = ref([]);
     const selectedTask = ref({
       title: '',
       projectName: '',
       status: '',
       backgroundColor: '',
-      deliverable: '',
+      description: '',
       start: null,
       end: null
     });
+
+    // Generate a color based on project name
+    const getProjectColor = (projectName) => {
+      const colors = [
+        '#4F46E5', // Indigo
+        '#7C3AED', // Violet
+        '#EC4899', // Pink
+        '#F59E0B', // Amber
+        '#10B981', // Emerald
+        '#3B82F6', // Blue
+        '#8B5CF6', // Purple
+        '#EF4444', // Red
+        '#14B8A6', // Teal
+        '#F97316'  // Orange
+      ];
+      
+      // Generate a consistent index based on project name
+      const index = projectName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      return colors[index % colors.length];
+    };
 
     const loadCalendarData = async () => {
       try {
         // Fetch all projects
         const projectsData = await fetchProjects();
         console.log('Loaded projects data:', projectsData);
-        const projects = projectsData.projects;
-        console.log('Projects array:', projects);
+        projects.value = projectsData.projects;
+        console.log('Projects array:', projects.value);
 
-        if (!projects || !projects.length) {
+        if (!projects.value || !projects.value.length) {
           console.log('No projects found');
           return [];
         }
         
-        // Create a map of project names for quick lookup
-        const projectMap = new Map();
-        projects.forEach(project => {
-          projectMap.set(project.name, project);
-        });
-        
         // Fetch all tasks from all projects
         const allTasks = [];
-        for (const project of projects) {
+        for (const project of projects.value) {
           console.log(`Loading tasks for project ${project.name}:`, project);
           const tasks = await fetchTasksFromProject(project.projectId);
           console.log(`Tasks for project ${project.name}:`, tasks);
@@ -104,10 +174,13 @@ export default {
           }
           
           if (tasksArray && tasksArray.length) {
-            // Add project name to each task
+            // Add project name and color to each task
+            const projectColor = getProjectColor(project.name);
             const tasksWithProject = tasksArray.map(task => ({
               ...task,
-              projectName: project.name
+              projectName: project.name,
+              projectColor: projectColor,
+              projectId: project.projectId // Make sure to add projectId here
             }));
             console.log(`Adding ${tasksWithProject.length} tasks to allTasks for project ${project.name}`);
             allTasks.push(...tasksWithProject);
@@ -120,13 +193,11 @@ export default {
         
         // Filter tasks with valid dates
         const validTasks = allTasks.filter(task => {
-          // Check if task exists and has required properties
           if (!task || typeof task !== 'object') {
             console.log('Invalid task object:', task);
             return false;
           }
 
-          // Check if dates are Firestore Timestamps
           const startDate = task.startDate?.toDate ? task.startDate.toDate() : task.startDate;
           const endDate = task.endDate?.toDate ? task.endDate.toDate() : task.endDate;
 
@@ -142,7 +213,8 @@ export default {
         
         // Map tasks to calendar events
         const calendarEvents = validTasks.map(task => {
-          const color = getTaskColor(task.status);
+          const statusColor = getTaskColor(task.status);
+          const projectColor = task.projectColor;
           
           // Convert Firestore Timestamps to Date objects if needed
           const startDate = task.startDate?.toDate ? task.startDate.toDate() : new Date(task.startDate);
@@ -155,6 +227,7 @@ export default {
 
           console.log('Creating calendar event:', {
             taskId: task.taskId || task.id,
+            projectId: task.projectId,
             projectName: task.projectName,
             taskName: task.name
           });
@@ -164,11 +237,12 @@ export default {
             title: task.name,
             start: startDate.toISOString(),
             end: endDate.toISOString(),
-            backgroundColor: color,
-            borderColor: color,
+            backgroundColor: getTaskColor(task.status),
+            borderColor: getTaskColor(task.status),
             textColor: '#FFFFFF',
-            deliverable: task.deliverable,
+            description: task.deliverable || task.description,
             extendedProps: {
+              projectId: task.projectId,
               projectName: task.projectName,
               status: task.status,
               comments: task.comments || []
@@ -177,6 +251,7 @@ export default {
         }).filter(event => event !== null);
         
         console.log('Final events array:', calendarEvents);
+        allEvents.value = calendarEvents;
         events.value = calendarEvents;
         calendarState.setEvents(calendarEvents);
         return calendarEvents;
@@ -184,6 +259,32 @@ export default {
         console.error('Error loading calendar data:', error);
         toastState.addNotification('error', 'Failed to load calendar data');
         return [];
+      }
+    };
+
+    const handleProjectFilterChange = () => {
+      console.log('Project filter changed:', selectedProjects.value);
+      console.log('All events:', allEvents.value);
+      
+      if (selectedProjects.value.length === 0) {
+        // Show all events if no projects are selected
+        console.log('Showing all events');
+        events.value = [...allEvents.value];
+      } else {
+        // Filter events by selected projects
+        console.log('Filtering events for projects:', selectedProjects.value);
+        events.value = allEvents.value.filter(event => {
+          return selectedProjects.value.includes(event.extendedProps.projectId);
+        });
+      }
+      
+      console.log('Filtered events:', events.value);
+      
+      // Update calendar events
+      if (calendar.value) {
+        console.log('Updating calendar with filtered events');
+        calendar.value.removeAllEvents();
+        calendar.value.addEventSource(events.value);
       }
     };
 
@@ -198,9 +299,9 @@ export default {
         calendar.value.destroy();
       }
       
-      console.log('Initializing calendar with events:', events.value);
+      console.log('Initializing calendar UI');
       
-      // Initialize calendar
+      // Initialize calendar with empty events
       calendar.value = new Calendar(calendarRef.value, {
         plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
@@ -209,7 +310,7 @@ export default {
           center: 'title',
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
         },
-        events: events.value,
+        events: [], // Start with empty events
         eventTimeFormat: {
           hour: '2-digit',
           minute: '2-digit',
@@ -224,23 +325,35 @@ export default {
         viewDidMount: function(viewInfo) {
           calendarState.setView(viewInfo.view.type);
         },
-        dayMaxEvents: true, // allow "more" link when too many events
+        dayMaxEvents: true,
         themeSystem: 'standard',
         height: 'auto',
         eventDidMount: function(info) {
-          console.log('Event mounted:', info.event.title);
+          // Set border color to project color
+          const projectColor = getProjectColor(info.event.extendedProps.projectName);
+          info.el.style.borderTopWidth = '4px';
+          info.el.style.borderTopColor = projectColor;
+          info.el.style.borderTopStyle = 'solid';
+          info.el.style.borderLeftWidth = '0';
+          info.el.style.borderRightWidth = '0';
+          info.el.style.borderBottomWidth = '0';
+          info.el.title = `\nStatus: ${info.event.extendedProps.status}`.trim();
         }
       });
       
       calendar.value.render();
-      console.log('Calendar rendered');
+      console.log('Calendar UI rendered');
     };
 
     const renderCalendar = async () => {
       console.log('renderCalendar called');
-      await loadCalendarData();
-      await nextTick(); // Wait for DOM updates
+      // Initialize calendar UI first
+      await nextTick();
       initializeCalendar();
+      
+      // Then load the data
+      console.log('Loading calendar data');
+      await loadCalendarData();
     };
 
     // Watch for changes in events and update calendar
@@ -258,10 +371,10 @@ export default {
         title: event.title,
         start: event.start,
         end: event.end,
-        backgroundColor: event.backgroundColor,
+        backgroundColor: getTaskColor(event.extendedProps.status),
         status: event.extendedProps.status,
         projectName: event.extendedProps.projectName,
-        deliverable: event.extendedProps.deliverable || ''
+        description: event.extendedProps.description || ''
       };
       showModal.value = true;
     };
@@ -275,16 +388,40 @@ export default {
       return new Date(date).toLocaleString();
     };
 
+    // Toggle project filter dropdown
+    const toggleProjectFilter = () => {
+      showProjectFilter.value = !showProjectFilter.value;
+    };
+
+    // Select/Deselect all projects
+    const selectAllProjects = () => {
+      if (selectedProjects.value.length === projects.value.length) {
+        selectedProjects.value = [];
+      } else {
+        selectedProjects.value = projects.value.map(p => p.projectId);
+      }
+      handleProjectFilterChange();
+    };
+
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event) => {
+      const dropdown = document.querySelector('.project-filter-dropdown');
+      if (dropdown && !dropdown.contains(event.target)) {
+        showProjectFilter.value = false;
+      }
+    };
+
     onMounted(async () => {
-      console.log('Component mounted, waiting for DOM...');
-      await nextTick();
+      console.log('Component mounted, initializing calendar UI...');
       await renderCalendar();
+      document.addEventListener('click', handleClickOutside);
     });
 
     onBeforeUnmount(() => {
       if (calendar.value) {
         calendar.value.destroy();
       }
+      document.removeEventListener('click', handleClickOutside);
     });
 
     return {
@@ -293,7 +430,13 @@ export default {
       selectedTask,
       closeModal,
       formatDate,
-      events
+      events,
+      projects,
+      selectedProjects,
+      showProjectFilter,
+      toggleProjectFilter,
+      selectAllProjects,
+      handleProjectFilterChange
     };
   }
 };
@@ -310,11 +453,22 @@ export default {
   font-family: inherit;
 }
 
-:deep(.fc-event) {
+:deep(.fc-h-event) {
   cursor: pointer;
 }
 
 :deep(.fc-event-title) {
   font-weight: 500;
+}
+
+/* Add hover effect for events */
+:deep(.fc-h-event:hover) {
+  filter: brightness(90%);
+}
+
+/* Add styles for the project filter dropdown */
+.project-filter-dropdown {
+  max-height: 24rem;
+  overflow-y: auto;
 }
 </style>
