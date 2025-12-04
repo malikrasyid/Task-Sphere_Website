@@ -18,12 +18,12 @@ defineEmits([
 </script>
 <template>
     <header class="bg-white w-full h-16 fixed top-0 left-0 z-30 border-b border-gray-200">
-      <div class="flex items-center justify-between h-full px-6">
+      <div class="flex items-center justify-between h-full px-3">
         
         <div class="flex items-center">
           <button 
             @click="$emit('toggle-desktop-sidebar')" 
-            class="text-gray-600 focus:outline-none mr-4 p-1 rounded-md hover:bg-gray-100"
+            class="text-gray-600 focus:outline-none mr-2 p-2 rounded-md hover:bg-gray-100"
             aria-label="Toggle sidebar"
             :title="isExpanded ? 'Collapse Menu' : 'Expand Menu'"
           >
@@ -32,24 +32,24 @@ defineEmits([
             </svg>
           </button>
           <h1 class="text-xl font-bold text-gray-900 flex items-center">
-            <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+            <svg class="w-6 h-6 mr-1 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
             Task Sphere
           </h1>
         </div>
   
-        <div class="flex items-center space-x-4">            
-          <NotificationList class="notification-button" />
+        <div class="flex items-center">            
+          <NotificationList class="notification-button mr-1" />
           
           <div class="relative profile-button">
             <button 
               @click="$emit('toggle-profile-dropdown')" 
-              class="flex items-center focus:outline-none p-1 rounded-full hover:bg-gray-100 transition-colors"
+              class="flex items-center focus:outline-none p-1.5 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <div class="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-medium text-sm border-2 border-indigo-600">
+              <div class="h-7 w-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-medium text-sm border-2 border-indigo-600">
                 <span>{{ initials }}</span>
               </div>
               <span class="text-sm font-medium text-gray-700 ml-2 hidden sm:inline">{{ fullName }}</span>
-              <svg class="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>

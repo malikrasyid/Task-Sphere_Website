@@ -7,7 +7,6 @@ import { authUtils } from './services/utils';
 
 // State
 const isSidebarExpanded = ref(true); // Desktop state: true (w-64) or false (w-20)
-const showMobileSidebar = ref(false); // Mobile state: true (open) or false (closed)
 const showProfileDropdown = ref(false);
 const isAuthenticated = ref(false);
 const user = ref(null);
@@ -101,19 +100,15 @@ provide('updateAuthState', updateAuthState);
         :full-name="fullName" 
         :show-dropdown="showProfileDropdown"
         :is-expanded="isSidebarExpanded"
-        @toggle-mobile-sidebar="toggleMobileSidebar"
         @toggle-desktop-sidebar="toggleDesktopSidebar"
         @toggle-profile-dropdown="toggleProfileDropdown"
         @logout="logout"
       />
 
       <div class="flex flex-1 pt-16 overflow-hidden">
-        
-        
+            
         <Sidebar 
             :is-expanded="isSidebarExpanded" 
-            :show-mobile="showMobileSidebar" 
-            @close-mobile-sidebar="closeMobileSidebar"
         />
 
         <main class="flex-1 p-4 sm:p-6 overflow-y-auto">
