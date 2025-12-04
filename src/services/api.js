@@ -37,11 +37,11 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
 
 // Auth API
 export async function login(email, password) {
-  return apiRequest('/api/auth', 'POST', { action: 'login', email, password });
+  return apiRequest('/api/auth/login', 'POST', { email, password });
 }
 
 export async function signUp(userData) {
-  return apiRequest('/api/auth', 'POST', { action: 'signup', ...userData });
+  return apiRequest('/api/auth/signup', 'POST', { userData });
 }
 
 // Projects API
@@ -50,7 +50,7 @@ export async function fetchProjects() {
 }
 
 export async function fetchProject(projectId) {
-  return apiRequest(`/api/projects?projectId=${projectId}`);
+  return apiRequest(`/api/projects/${projectId}`);
 }
 
 export async function createProject(projectData) {
@@ -58,20 +58,28 @@ export async function createProject(projectData) {
 }
 
 export async function updateProject(projectId, updateData) {
-  return apiRequest(`/api/projects?projectId=${projectId}`, 'PUT', updateData);
+  return apiRequest(`/api/projects/${projectId}`, 'PATCH', updateData);
 }
 
 export async function deleteProject(projectId) {
-  return apiRequest(`/api/projects?projectId=${projectId}`, 'DELETE');
+  return apiRequest(`/api/projects/${projectId}`, 'DELETE');
 }
 
 export async function addMemberToProject(projectId, userData) {
-  return apiRequest(`/api/projects/member.js?projectId=${projectId}`, 'POST', { action: 'add', ...userData });
+  return apiRequest(`/api/projects/${projectId}/members/add`, 'POST', { userData });
+}
+
+export async function removeMemberFromProject(projectId, userData) {
+  return apiRequest(`/api/projects/${projectId}/members/remove`, 'POST', { userData });
+}
+
+export async function updateRole(projectId, userData) {
+  return apiRequest(`/api/projects/${projectId}/members/update-role`, 'POST', { userData });
 }
 
 // Tasks API
 export async function fetchTasksFromProject(projectId) {
-  const data = await apiRequest(`/api/projects/tasks?projectId=${projectId}`);
+  const data = await apiRequest(`/api/projects/${projectId}/tasks`);
 
   const tasksWithStringDates = data.tasks.map(task => ({
     ...task,
@@ -83,41 +91,41 @@ export async function fetchTasksFromProject(projectId) {
 }
 
 export async function fetchTask(projectId, taskId) {
-  return apiRequest(`/api/projects/tasks?projectId=${projectId}&&taskId=${taskId}`);
+  return apiRequest(`/api/projects/${projectId}/tasks/${taskId}`);
 }
 
 export async function addTask(projectId, taskData) {
-  return apiRequest(`/api/projects/tasks?projectId=${projectId}`, 'POST', taskData);
+  return apiRequest(`/api/projects/${projectId}/tasks`, 'POST', taskData);
 }
 
 export async function updateTask(projectId, taskId, updateData) {
-  return apiRequest(`/api/projects/tasks?projectId=${projectId}&&taskId=${taskId}`, 'PUT', updateData);
+  return apiRequest(`/api/projects/${projectId}/tasks/${taskId}`, 'PATCH', updateData);
 }
 
 export async function deleteTask(projectId, taskId) {
-  return apiRequest(`/api/projects/tasks?projectId=${projectId}&&taskId=${taskId}`, 'DELETE');
+  return apiRequest(`/api/projects/${projectId}/tasks/${taskId}`, 'DELETE');
 }
 
 // Comments API
 export async function fetchComments(projectId, taskId) {
-  return apiRequest(`/api/projects/tasks/comments?projectId=${projectId}&&taskId=${taskId}`);
+  return apiRequest(`/api/projects/${projectId}/tasks/${taskId}/comments`);
 }
 
 export async function addComment(projectId, taskId, commentData) {
-  return apiRequest(`/api/projects/tasks/comments?projectId=${projectId}&&taskId=${taskId}`, 'POST', commentData);
+  return apiRequest(`/api/projects/${projectId}/tasks/${taskId}/comments`, 'POST', commentData);
 }
 
 export async function deleteComment(projectId, taskId, commentId) {
-  return apiRequest(`/api/projects/tasks/comments?projectId=${projectId}&&taskId=${taskId}&&commentId=${commentId}`, 'DELETE');
+  return apiRequest(`/api/projects/${projectId}/tasks/${taskId}/comments/${commentId}`, 'DELETE');
 }
 
 // Users API
 export async function fetchUserById(userId) {
-  return apiRequest(`/api/users?action=name&userId=${encodeURIComponent(userId)}`);
+  return apiRequest(`/api/users/${encodeURIComponent(userId)}`);
 }
 
 export async function searchUser(query) {
-  return apiRequest(`/api/users?action=search&query=${encodeURIComponent(query)}`);
+  return apiRequest(`/api/users/search?query=${encodeURIComponent(query)}`);
 }
 
 export async function updateUserProfile(userData) {
@@ -130,11 +138,11 @@ export async function fetchNotifications() {
 }
 
 export async function markNotificationAsRead(notificationId) {
-  return apiRequest(`/api/notifications?notificationId=${notificationId}`, 'PUT');
+  return apiRequest(`/api/notifications/${notificationId}/read`, 'PUT');
 }
 
 export async function markAllNotificationsAsRead() {
-  return apiRequest('/api/notifications', 'PUT');
+  return apiRequest('/api/notifications/mark-all-read', 'PUT');
 }
 
 export async function sendNotification(projectId, taskId, title, body, type = 'info') {

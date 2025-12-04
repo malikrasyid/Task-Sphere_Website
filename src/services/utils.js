@@ -154,3 +154,71 @@ export function showToast(type, message) {
     window.dispatchEvent(toastEvent);
   });
 } 
+
+// NEW AUTH/USER UTILITIES
+export const authUtils = {
+  /**
+   * Checks sessionStorage for authentication token and user data.
+   * @returns {{isAuthenticated: boolean, user: object | null}}
+   */
+  checkAuth() {
+      const token = sessionStorage.getItem('sessionToken');
+      const storedUser = sessionStorage.getItem('user');
+      if (token && storedUser) {
+          return {
+              isAuthenticated: true,
+              user: JSON.parse(storedUser)
+          };
+      }
+      return {
+          isAuthenticated: false,
+          user: null
+      };
+  },
+
+  /**
+   * Clears session storage on expiration.
+   * @param {function} updateAuthStateCallback - Callback to refresh Vue's reactive auth state.
+   */
+  handleSessionExpired(updateAuthStateCallback) {
+      sessionStorage.removeItem('sessionToken');
+      sessionStorage.removeItem('user');
+      if (updateAuthStateCallback) {
+          updateAuthStateCallback();
+      }
+  },
+
+  /**
+   * Logs out the user by clearing session storage.
+   * @param {function} updateAuthStateCallback - Callback to refresh Vue's reactive auth state.
+   */
+  logout(updateAuthStateCallback) {
+      sessionStorage.removeItem('sessionToken');
+      sessionStorage.removeItem('user');
+      if (updateAuthStateCallback) {
+          updateAuthStateCallback();
+      }
+  },
+
+  /**
+   * Gets user initials from the user object.
+   * @param {object | null} user
+   * @returns {string}
+   */
+  getUserInitials(user) {
+      if (!user) return '';
+      const { firstName, lastName } = user;
+      return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+  },
+
+  /**
+   * Gets user full name from the user object.
+   * @param {object | null} user
+   * @returns {string}
+   */
+  getUserFullName(user) {
+      if (!user) return '';
+      const { firstName, lastName } = user;
+      return `${firstName || ''} ${lastName || ''}`.trim();
+  }
+};

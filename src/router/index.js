@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from '../components/Dashboard.vue'
-import ProjectList from '../components/ProjectList.vue'
-import Calendar from '../components/Calendar.vue'
-import LoginForm from '../components/LoginForm.vue'
+import Dashboard from '../components/dashboard/Dashboard.vue'
+import ProjectList from '../components/projects/ProjectList.vue'
+import Calendar from '../components/calendar/Calendar.vue'
+import LoginForm from '../components/Auth/LoginForm.vue'
 
 const routes = [
   {
