@@ -1,8 +1,8 @@
 <template>
-  <div class="mb-6 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+  <div class="mb-6 bg-indigo-50 rounded-xl overflow-hidden">
     <div 
       @click="toggleExpanded" 
-      class="cursor-pointer p-5 flex justify-between items-center hover:bg-gray-50 transition-colors"
+      class="cursor-pointer p-5 flex justify-between items-center hover:bg-slate-100 transition-colors"
     >
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between mb-1">
@@ -16,7 +16,7 @@
         </div>
         <p class="text-gray-600 text-sm mt-1 truncate">{{ project.description || 'No description' }}</p>
         
-        <div class="w-full bg-gray-200 rounded-full h-1.5 mt-3">
+        <div class="w-full bg-gray-300 rounded-full h-1.5 mt-3">
           <div 
             class="bg-indigo-600 h-1.5 rounded-full transition-all duration-500" 
             :style="{ width: `${progress}%` }"
@@ -46,7 +46,7 @@
     
     <div 
       v-if="isExpanded" 
-      class="p-5 space-y-8 bg-gray-50 border-t border-gray-100 transition-all duration-300 ease-in-out animate-fadeIn"
+      class="p-5 space-y-8 bg-indigo-50 transition-all duration-300 ease-in-out animate-fadeIn"
     >
       <div>
         <div class="flex items-center justify-between mb-5">
@@ -78,7 +78,7 @@
           
           <div 
             v-if="projectTasks.length === 0"
-            class="col-span-2 bg-white p-6 rounded-lg border border-gray-200 text-center shadow-inner"
+            class="col-span-2 bg-white p-6 rounded-lg text-center shadow-inner"
           >
             <p class="text-gray-500">No tasks yet. Add your first task to get started.</p>
           </div>
@@ -113,7 +113,7 @@
           
           <div 
             v-if="project.team.length === 0"
-            class="col-span-3 bg-white p-6 rounded-lg border border-gray-200 text-center shadow-inner"
+            class="col-span-3 bg-white p-6 rounded-lg text-center shadow-inner"
           >
             <p class="text-gray-500">No team members yet. Add your first team member to collaborate.</p>
           </div>

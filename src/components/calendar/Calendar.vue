@@ -2,7 +2,7 @@
   <div>
     <div class="flex justify-end mb-4">
       <!-- Add Project Filter -->
-      <div class="mb-4 flex items-center space-x-4">
+      <div class=" flex items-center space-x-4">
         <div class="relative">
           <button 
             @click="toggleProjectFilter" 

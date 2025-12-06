@@ -61,7 +61,9 @@ function handleClickOutside(event) {
 
 // Computed properties
 const initials = computed(() => authUtils.getUserInitials(user.value));
-const fullName = computed(() => authUtils.getUserFullName(user.value));
+const fullName = computed(() => authUtils.getUserName(user.value));
+const firstName = computed(() => authUtils.getUserFirstName(user.value));
+const email = computed(() => authUtils.getUserEmail(user.value));
 
 // Lifecycle hooks
 onMounted(() => {
@@ -80,13 +82,12 @@ provide('updateAuthState', updateAuthState);
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-white">
     
-    <div v-if="!isAuthenticated" class="h-screen flex items-center justify-center bg-gray-50">
-      <div class="bg-white border border-gray-200 rounded-xl p-8 max-w-md w-full">
+    <div v-if="!isAuthenticated" class="h-screen flex items-center justify-center bg-indigo-50">
+      <div class="bg-white rounded-2xl shadow-lg shadow-blue-200 p-8 max-w-md w-full">
         <div class="text-center mb-8">
           <h1 class="text-3xl font-extrabold text-gray-900">Task Sphere</h1>
-          <p class="text-gray-500 mt-1">Modern Project Management</p>
         </div>
         
         <LoginForm />
@@ -98,6 +99,8 @@ provide('updateAuthState', updateAuthState);
       <TopBar 
         :initials="initials" 
         :full-name="fullName" 
+        :first-name="firstName"
+        :email="email"
         :show-dropdown="showProfileDropdown"
         :is-expanded="isSidebarExpanded"
         @toggle-desktop-sidebar="toggleDesktopSidebar"
@@ -111,7 +114,7 @@ provide('updateAuthState', updateAuthState);
             :is-expanded="isSidebarExpanded" 
         />
 
-        <main class="flex-1 p-4 sm:p-6 overflow-y-auto">
+        <main class="flex-1 p-4 sm:p-6 overflow-y-auto bg-white">
           <div class="max-w-7xl mx-auto h-full">
             <router-view></router-view>
           </div>

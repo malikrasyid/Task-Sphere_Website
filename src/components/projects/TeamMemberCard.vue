@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white rounded-lg border border-gray-200 shadow-sm flex items-center p-3 hover:shadow-md transition-shadow">
-    <div class="h-8 w-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold mr-3">
+  <div class="bg-slate-200 rounded-lg flex items-center p-3 hover:bg-gray-50 transition-colors">
+    <div class="h-8 w-8 rounded-full bg-white text-indigo-700 flex items-center justify-center font-bold mr-3">
       {{ userInitial }}
     </div>
     <div>

@@ -13,14 +13,14 @@
       <div class="space-y-4">
         <!-- Search input -->
         <div>
-          <label for="search" class="block text-sm font-medium text-gray-700">Search Users</label>
+          <label for="search" class="block text-sm mb-1 font-medium text-gray-700">Search Users</label>
           <div class="mt-1 relative">
             <input
               id="search"
               v-model="searchQuery"
               type="text"
               placeholder="Search by name or email"
-              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              class="block w-full rounded-md border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               @input="handleSearch"
             />
             <div v-if="addMemberState.isLoading" class="absolute right-3 top-2">

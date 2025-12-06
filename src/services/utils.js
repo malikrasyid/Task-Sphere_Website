@@ -206,9 +206,19 @@ export const authUtils = {
    * @returns {string}
    */
   getUserInitials(user) {
-      if (!user) return '';
-      const { firstName, lastName } = user;
-      return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+    if (!user) return '';
+
+    if (user.name && typeof user.name === 'string') {
+      const parts = user.name.trim().split(/\s+/);
+      // If only one name, take first 2 chars
+      if (parts.length === 1) {
+          return parts[0].substring(0, 2).toUpperCase();
+      }
+      // Otherwise take first char of first and last word
+      const firstInitial = parts[0]?.[0] || '';
+      const lastInitial = parts[parts.length - 1]?.[0] || '';
+      return (firstInitial + lastInitial).toUpperCase();
+    }
   },
 
   /**
@@ -216,9 +226,30 @@ export const authUtils = {
    * @param {object | null} user
    * @returns {string}
    */
-  getUserFullName(user) {
+  getUserName(user) {
+  if (!user) return '';
+  if (user.name) return String(user.name);
+},
+
+  /**
+   * Gets user first name from the user object.
+   * @param {object | null} user
+   * @returns {string}
+   */
+  getUserFirstName(user) {
+    if (!user) return '';
+    if (user.name && typeof user.name === 'string') {
+      return user.name.trim().split(/\s+/)[0];
+    }  
+},
+
+  /**
+   * Gets user email from the user object.
+   * @param {object | null} user
+   * @returns {string}
+   */
+  getUserEmail(user) {
       if (!user) return '';
-      const { firstName, lastName } = user;
-      return `${firstName || ''} ${lastName || ''}`.trim();
+      return user.email || '';
   }
 };

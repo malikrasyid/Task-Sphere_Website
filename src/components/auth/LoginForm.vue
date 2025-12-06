@@ -89,7 +89,7 @@ async function handleSubmit() {
           type="email" 
           id="loginEmail" 
           v-model="email"
-          class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border transition-shadow hover:shadow-md" 
+          class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border transition-shadow hover:shadow-md" 
           required
         >
       </div>
@@ -99,13 +99,13 @@ async function handleSubmit() {
           type="password" 
           id="loginPassword" 
           v-model="password"
-          class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border transition-shadow hover:shadow-md" 
+          class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border transition-shadow hover:shadow-md" 
           required
         >
       </div>
       <button 
         type="submit" 
-        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
         :disabled="isLoading"
       >
         <span v-if="isLoading">Signing in...</span>
@@ -121,7 +121,7 @@ async function handleSubmit() {
             type="text" 
             id="signupFirstName" 
             v-model="firstName"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border transition-shadow hover:shadow-md" 
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3 border transition-shadow hover:shadow-md" 
             required
           >
         </div>
@@ -131,7 +131,7 @@ async function handleSubmit() {
             type="text" 
             id="signupLastName" 
             v-model="lastName"
-            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border transition-shadow hover:shadow-md" 
+            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3 border transition-shadow hover:shadow-md" 
             required
           >
         </div>
@@ -142,7 +142,7 @@ async function handleSubmit() {
           type="email" 
           id="signupEmail" 
           v-model="email"
-          class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border transition-shadow hover:shadow-md" 
+          class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3 border transition-shadow hover:shadow-md" 
           required
         >
       </div>
@@ -152,7 +152,7 @@ async function handleSubmit() {
           type="password" 
           id="signupPassword" 
           v-model="password"
-          class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 border transition-shadow hover:shadow-md" 
+          class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3 border transition-shadow hover:shadow-md" 
           minlength="8" 
           required
         >

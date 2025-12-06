@@ -4,7 +4,7 @@
       <StatCard 
         title="Total Projects" 
         :value="filteredProjects.length" 
-        bgColor="bg-indigo-50" 
+        bgColor="bg-indigo-100" 
         textColor="text-indigo-600"
       >
         <template #icon>
@@ -17,7 +17,7 @@
       <StatCard 
         title="Total Tasks" 
         :value="totalTasks" 
-        bgColor="bg-blue-50" 
+        bgColor="bg-blue-100" 
         textColor="text-blue-600"
       >
         <template #icon>
@@ -29,7 +29,7 @@
         <template #extra>
           <div class="mt-3">
             <p class="text-sm text-gray-500">{{ completedTasks }} completed</p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+            <div class="w-full bg-gray-300 rounded-full h-2 mt-1">
               <div class="bg-blue-500 h-2 rounded-full transition-all duration-500" :style="{ width: `${completionPercentage}%` }"></div>
             </div>
           </div>
@@ -39,7 +39,7 @@
       <StatCard 
         title="Overdue Tasks" 
         :value="overdueCount" 
-        bgColor="bg-red-50" 
+        bgColor="bg-red-100" 
         textColor="text-red-600"
       >
         <template #icon>
@@ -52,7 +52,7 @@
       <StatCard 
         title="Upcoming (7 days)" 
         :value="upcomingCount" 
-        bgColor="bg-amber-50" 
+        bgColor="bg-amber-100" 
         textColor="text-amber-600"
       >
         <template #icon>
@@ -64,8 +64,8 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 bg-white rounded-xl shadow-lg border border-gray-100">
-        <div class="p-5 border-b border-gray-100">
+      <div class="lg:col-span-2 bg-indigo-50 rounded-xl">
+        <div class="p-5 border-b border-gray-800">
           <h2 class="text-lg font-semibold text-gray-900">Upcoming Deadlines</h2>
         </div>
         <div class="p-5">
@@ -106,8 +106,8 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-lg border border-gray-100">
-        <div class="p-5 border-b border-gray-100">
+      <div class="bg-indigo-50 rounded-xl">
+        <div class="p-5 border-b border-gray-800">
           <h2 class="text-lg font-semibold text-gray-900">Tasks by Status</h2>
         </div>
         <div class="p-5">
@@ -117,7 +117,7 @@
                 <div class="text-sm font-medium text-gray-700">{{ status }}</div>
                 <div class="text-sm text-gray-500">{{ count }} ({{ getStatusPercentage(count) }}%)</div>
               </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="w-full bg-gray-300 rounded-full h-2.5">
                 <div class="h-2.5 rounded-full transition-all duration-500" :style="{ width: `${getStatusPercentage(count)}%`, backgroundColor: getTaskColor(status) }"></div>
               </div>
             </div>
@@ -148,8 +148,8 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { formatDateUTC, getTaskColor } from '../../services/utils'
-import { dashboardState, toastState } from '../../stores/componentState'
-import { fetchProjects, fetchTasksFromProject } from '../../services/api'
+import { dashboardState, toastState, taskCardState } from '../../stores/componentState'
+import { fetchProjects, fetchTasksFromProject, fetchComments } from '../../services/api'
 import StatCard from '../StatCard.vue'
 import RecentActivityList from '../RecentActivityList.vue' // New import
 
@@ -280,13 +280,35 @@ onMounted(async () => {
       if (projects.value.length > 0) {
       // Load tasks for each project
       const allTasks = []
+      const commentPromises = []
+
       for (const project of projects.value) {
         if (project && project.projectId) {
           try {
             const projectTasks = await fetchTasksFromProject(project.projectId)
             
-            if (projectTasks && Array.isArray(projectTasks)) {
-              allTasks.push(...projectTasks)
+            if (Array.isArray(projectTasks)) {
+              const tasksWithId = projectTasks.map(t => ({
+                ...t,
+                projectId: project.projectId
+              }))
+              allTasks.push(...tasksWithId)
+
+              // Fetch comments for each task and update store
+              tasksWithId.forEach(task => {
+                const taskId = task.taskId || task.id
+                if (taskId) {
+                  commentPromises.push(
+                    fetchComments(project.projectId, taskId)
+                      .then(data => {
+                        if (data && data.comments) {
+                          taskCardState.setComments(taskId, data.comments)
+                        }
+                      })
+                      .catch(err => console.error(`Error loading comments for task ${taskId}:`, err))
+                  )
+                }
+              })
             }
           } catch (error) {
             console.error(`Error loading tasks for project ${project.projectId}:`, error)
@@ -295,6 +317,8 @@ onMounted(async () => {
       }
       
       tasks.value = allTasks;
+      await Promise.allSettled(commentPromises);
+
       } else {
         tasks.value = [];
       }

@@ -81,10 +81,27 @@ export async function updateRole(projectId, userData) {
 export async function fetchTasksFromProject(projectId) {
   const data = await apiRequest(`/api/projects/${projectId}/tasks`);
 
+  const parseDate = (dateValue) => {
+    if (!dateValue) return null;
+    
+    // Handle Firestore Timestamp object (has _seconds)
+    if (typeof dateValue === 'object' && '_seconds' in dateValue) {
+      return new Date(dateValue._seconds * 1000).toISOString();
+    }
+    
+    // Handle existing ISO strings or numbers
+    const date = new Date(dateValue);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString();
+    }
+    
+    return null;
+  };
+
   const tasksWithStringDates = data.tasks.map(task => ({
     ...task,
-    startDate: task.startDate ? new Date(task.startDate._seconds * 1000).toISOString() : null,
-    endDate: task.endDate ? new Date(task.endDate._seconds * 1000).toISOString() : null
+    startDate: parseDate(task.startDate),
+    endDate: parseDate(task.endDate)
   }));
   
   return tasksWithStringDates;

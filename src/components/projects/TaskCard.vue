@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-xl shadow-md border border-gray-100 p-5 group relative transition-all duration-300 hover:shadow-xl">
+  <div class="bg-white rounded-xl p-5 group relative transition-all duration-300">
     <div class="flex justify-between items-start mb-3">
       <h4 class="font-bold text-lg text-gray-900 pr-4">{{ task.name }}</h4>
       <span 
@@ -12,35 +12,38 @@
 
     <p class="text-sm text-gray-600 mb-4">{{ task.deliverable }}</p>
 
-    <div class="flex items-center text-xs text-gray-500 mb-4 border-t border-gray-100 pt-3">
-      <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-      </svg>
-      <span class="font-medium text-gray-700 mr-2">Due:</span> 
-      {{ formatDateUTC(task.endDate) }}
-    </div>
-
-    <div class="flex justify-end space-x-3 transition-opacity duration-300 group-hover:opacity-100 opacity-0 absolute top-5 right-5">
-      <button 
-        @click="handleMarkAsDone" 
-        class="text-green-600 hover:text-white hover:bg-green-500 transition-colors p-1.5 rounded-full"
-        title="Mark as Complete"
-        :disabled="task.status === 'Done'"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+    <div class="flex justify-between items-center mb-4 border-t border-gray-100 pt-3 min-h-[32px]">
+      <div class="flex items-center text-xs text-gray-500 mb-4 pt-3">
+        <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
         </svg>
-      </button>
+        <span class="font-medium text-gray-700 mr-2">Due:</span> 
+        {{ formatDateUTC(task.endDate) }}
+      </div>
 
-      <button 
-        @click="handleDelete" 
-        class="text-red-600 hover:text-white hover:bg-red-500 transition-colors p-1.5 rounded-full"
-        title="Delete Task"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-        </svg>
-      </button>
+      <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <button 
+          @click="handleMarkAsDone" 
+          class="text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors p-1.5 rounded-md"
+          title="Mark as Complete"
+          :disabled="task.status === 'Done'"
+          :class="{ 'opacity-50 cursor-not-allowed': task.status === 'Done' }"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </button>
+
+        <button 
+          @click="handleDelete" 
+          class="text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors p-1.5 rounded-md"
+          title="Delete Task"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div class="mt-4 pt-4 border-t border-gray-100">
