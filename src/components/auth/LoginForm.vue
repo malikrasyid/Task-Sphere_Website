@@ -60,8 +60,7 @@ async function handleSubmit() {
       sessionStorage.setItem('sessionToken', response.token);
       sessionStorage.setItem('user', JSON.stringify({
         email: email.value,
-        firstName: response.firstName,
-        lastName: response.lastName
+        name: response.name
       }));
       toastState.addNotification('success', 'Logged in successfully!');
       loginFormState.resetForm();

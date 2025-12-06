@@ -206,7 +206,7 @@ export const authUtils = {
    * @returns {string}
    */
   getUserInitials(user) {
-    if (!user) return '';
+    if (!user || !user.name || typeof user.name !== 'string') return '';
 
     if (user.name && typeof user.name === 'string') {
       const parts = user.name.trim().split(/\s+/);
@@ -227,8 +227,8 @@ export const authUtils = {
    * @returns {string}
    */
   getUserName(user) {
-  if (!user) return '';
-  if (user.name) return String(user.name);
+    if (!user || !user.name) return '';
+    return String(user.name);
 },
 
   /**
@@ -237,10 +237,8 @@ export const authUtils = {
    * @returns {string}
    */
   getUserFirstName(user) {
-    if (!user) return '';
-    if (user.name && typeof user.name === 'string') {
-      return user.name.trim().split(/\s+/)[0];
-    }  
+    if (!user || !user.name || typeof user.name !== 'string') return '';
+    return user.name.trim().split(/\s+/)[0];
 },
 
   /**

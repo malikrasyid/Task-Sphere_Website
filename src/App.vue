@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, provide } from 'vue';
-import LoginForm from './components/Auth/LoginForm.vue'; // Updated Path
+import LoginForm from './components/auth/LoginForm.vue'; // Updated Path
 import ToastContainer from './components/ToastContainer.vue';
 import { TopBar, Sidebar } from './components/layout'; // New layout imports
 import { authUtils } from './services/utils';
@@ -114,7 +114,7 @@ provide('updateAuthState', updateAuthState);
             :is-expanded="isSidebarExpanded" 
         />
 
-        <main class="flex-1 p-4 sm:p-6 overflow-y-auto bg-white">
+        <main class="flex-1 p-4 overflow-y-auto bg-white">
           <div class="max-w-7xl mx-auto h-full">
             <router-view></router-view>
           </div>
